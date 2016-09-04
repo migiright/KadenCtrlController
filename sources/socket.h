@@ -5,6 +5,8 @@
 #include <string>
 #include <boost/noncopyable.hpp>
 #include <boost/exception/all.hpp>
+#include <vector>
+#include <memory>
 
 //サーバーに繋ぐ
 //hostname 接続先のホスト名, port: 接続先のポート番号
@@ -24,8 +26,14 @@ public:
 	//closeする
 	virtual ~Socket();
 	
+	//サーバーからのデータを待つ
+	//シグナルが来た時はnullを返す
+	std::unique_ptr<std::vector<unsigned char>> getData() const;
+	
 	int socket() const { return socket_; }
 private:
 	int socket_;
+	fd_set mask_; //select用マスク
+	int maskWidth_; //マスクの幅
 };
 

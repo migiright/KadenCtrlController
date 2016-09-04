@@ -27,8 +27,11 @@ int main(int argc, char **argv){
 	
 	Config config = loadConfig();
 	
-	int soc = setupClient(config.hostName, config.port);
-	close(soc);
+	try {
+		Socket soc(config.hostName, config.port);
+	} catch(SocketException &e) {
+		cerr << boost::diagnostic_information(e) << endl;
+	}
 	
 	return 0;
 }

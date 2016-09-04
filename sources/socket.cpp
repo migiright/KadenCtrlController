@@ -9,6 +9,7 @@
 #include <cerrno>
 #include <array>
 #include <algorithm>
+#include <boost/range/algorithm/copy.hpp>
 #include <assert.h>
 
 using namespace std;
@@ -26,6 +27,13 @@ namespace {
 	template<class T>
 	int bytesToInt(T iterator){
 		return iterator[0] | iterator[1] << 8 | iterator[2] << 16 | iterator[3] << 24;
+	}
+	array<unsigned char, 4> intToBytes(unsigned x){
+		return { static_cast<unsigned char>(x & 0xff)
+			, static_cast<unsigned char>((x>>8) & 0xff)
+			, static_cast<unsigned char>((x>>16) & 0xff)
+			, static_cast<unsigned char>((x>>24) & 0xff)
+		};
 	}
 }
 
@@ -165,4 +173,13 @@ unique_ptr<vector<unsigned char>> Socket::getData() const {
 		assert(FD_ISSET(socket_, &readOk) && "データがないのにselectを抜けた");
 	} while(!data || itData != end(*data));
 	return data;
+}
+
+void Socket::sendData(BufferRange range) const {
+	int size = distance(range);
+	auto s = intToBytes(size);
+	send(socket_, &(s[0]), s.size(), 0);
+	vector<unsigned char> b(size);
+	copy(range, begin(b));
+	send(socket_, &(b[0]), b.size(), 0);
 }

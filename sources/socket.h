@@ -7,6 +7,7 @@
 #include <boost/exception/all.hpp>
 #include <vector>
 #include <memory>
+#include <boost/range/any_range.hpp>
 
 //サーバーに繋ぐ
 //hostname 接続先のホスト名, port: 接続先のポート番号
@@ -29,6 +30,12 @@ public:
 	//サーバーからのデータを待つ
 	//シグナルが来た時はnullを返す
 	std::unique_ptr<std::vector<unsigned char>> getData() const;
+	
+	//サーバーにデータを送る
+	using BufferRange = boost::any_range<
+		const unsigned char, boost::forward_traversal_tag, const unsigned char&, std::ptrdiff_t
+	>;
+	void sendData(BufferRange range) const;
 	
 	int socket() const { return socket_; }
 private:

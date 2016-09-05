@@ -1,5 +1,5 @@
 CC      = g++
-CFLAGS  = -MMD -MP
+CFLAGS  = -MMD -MP -Wall -std=c++14
 LDFLAGS = -lwiringPi
 LIBS    = 
 INCLUDE = -I ./sources

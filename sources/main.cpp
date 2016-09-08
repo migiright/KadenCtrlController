@@ -6,6 +6,8 @@
 #include "config.h"
 #include "socket.h"
 #include "utilities.h"
+#include "Controller.h"
+#include "TypeUtilities.h"
 
 using namespace std;
 
@@ -49,18 +51,26 @@ int main(int argc, char **argv){
 	Config config = loadConfig();
 	
 	try {
-		Socket soc(config.hostName, config.port);
+		auto soc = make_shared<Socket>(config.hostName, config.port);
+		
+		//コントローラーを作る
+		unique_ptr<Controller> controller = isExistentType(config.type)
+			? createController(config.type, soc)
+			: createDefaultController(soc);
 		
 		//infoを送る
-		soc.sendData(makeInfo(config.name, config.type, config.imageId));
+		soc->sendData(makeInfo(config.name, config.type, config.imageId));
 		
 		unique_ptr<vector<unsigned char>> buf;
-		while(buf = soc.getData()){
+		while(buf = soc->getData()){
 			cerr << boost::format("received %d bytes of data: \"%s\"") % buf->size() % string(begin(*buf), end(*buf)) << endl;
 			for(auto c : *buf){
 				cerr << boost::format("%02x ") % static_cast<int>(c);
 			}
 			cerr << endl;
+			
+			//コントローラーのそれぞれの処理をする
+			controller->processData(*buf);
 		}
 		
 		saveConfig(config);

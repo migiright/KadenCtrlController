@@ -24,3 +24,12 @@ enum class MessageType : unsigned char {
 constexpr unsigned char MessageTypeToUchar(MessageType t) {
 	return static_cast<unsigned char>(t);
 }
+
+//サーバーから受け取るメッセージのタイプ
+enum class ReceivingMessageType : unsigned char {
+	Local //typeごとに違うデータを受け取る
+};
+
+constexpr ReceivingMessageType ucharToReceivingMessageType(unsigned char t){
+	return static_cast<ReceivingMessageType>(t);
+}

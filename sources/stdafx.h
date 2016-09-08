@@ -13,6 +13,10 @@
 #include <algorithm>
 #include <array>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <functional>
+#include <utility>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,6 +28,7 @@
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 #include <boost/range.hpp> 
+#include <boost/range/adaptors.hpp> 
 #include <boost/range/algorithm.hpp>
 #include <boost/range/algorithm_ext.hpp> 
 #include <boost/property_tree/ptree.hpp>

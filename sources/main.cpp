@@ -24,16 +24,6 @@ namespace {
 		boost::insert(v, end(v), s);
 	}
 	
-	//サーバーに送るメッセージのタイプ
-	enum class MessageType : unsigned char {
-		Info //info(name, type, imageId)
-		, Local //typeごとに違うデータを送る
-	};
-	
-	constexpr unsigned char MessageTypeToUchar(MessageType t) {
-		return static_cast<unsigned char>(t);
-	}
-	
 	//info(name, type, imageId)を送るデータを作る
 	vector<unsigned char> makeInfo(string name, string type, int imageId) {
 		vector<unsigned char> b;

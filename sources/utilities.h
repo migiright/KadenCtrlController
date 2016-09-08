@@ -14,3 +14,13 @@ inline std::array<unsigned char, 4> intToBytes(unsigned x){
 		, static_cast<unsigned char>((x>>24) & 0xff)
 	};
 }
+
+//サーバーに送るメッセージのタイプ
+enum class MessageType : unsigned char {
+	Info //info(name, type, imageId)
+	, Local //typeごとに違うデータを送る
+};
+
+constexpr unsigned char MessageTypeToUchar(MessageType t) {
+	return static_cast<unsigned char>(t);
+}

@@ -5,16 +5,46 @@
 
 #include "config.h"
 #include "socket.h"
+#include "utilities.h"
 
 using namespace std;
 
 namespace {
+	
 	volatile sig_atomic_t receivedSignal = 0;;
-}
 
-//シグナルハンドラ ctrl+cが押された時に呼ばれる
-void signalHandler(int signum){
-	receivedSignal = 1;
+	//シグナルハンドラ ctrl+cが押された時に呼ばれる
+	void signalHandler(int signum){
+		receivedSignal = 1;
+	}
+	
+	//vectorに文字数と文字列を追加
+	void addString(vector<unsigned char> &v, const string& s){
+		boost::insert(v, end(v), intToBytes(s.size()));
+		boost::insert(v, end(v), s);
+	}
+	
+	//サーバーに送るメッセージのタイプ
+	enum class MessageType : unsigned char {
+		Info //info(name, type, imageId)
+		, Local //typeごとに違うデータを送る
+	};
+	
+	constexpr unsigned char MessageTypeToUchar(MessageType t) {
+		return static_cast<unsigned char>(t);
+	}
+	
+	//info(name, type, imageId)を送るデータを作る
+	vector<unsigned char> makeInfo(string name, string type, int imageId) {
+		vector<unsigned char> b;
+		
+		b.push_back(MessageTypeToUchar(MessageType::Info));
+		addString(b, name);
+		addString(b, type);
+		boost::insert(b, end(b), intToBytes(imageId));
+		
+		return move(b);
+	}
 }
 
 int main(int argc, char **argv){
@@ -31,8 +61,8 @@ int main(int argc, char **argv){
 	try {
 		Socket soc(config.hostName, config.port);
 		
-		soc.sendData("abcde");
-		soc.sendData(std::initializer_list<unsigned char>{9, 8, 7});
+		//infoを送る
+		soc.sendData(makeInfo(config.name, config.type, config.imageId));
 		
 		unique_ptr<vector<unsigned char>> buf;
 		while(buf = soc.getData()){

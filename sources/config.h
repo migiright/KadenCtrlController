@@ -10,3 +10,4 @@ struct Config {
 };
 
 Config loadConfig();
+void saveConfig(const Config &config);

@@ -42,6 +42,8 @@ int main(int argc, char **argv){
 			}
 			cerr << endl;
 		}
+		
+		saveConfig(config);
 	} catch(SocketException &e) {
 		cerr << boost::diagnostic_information(e) << endl;
 	}

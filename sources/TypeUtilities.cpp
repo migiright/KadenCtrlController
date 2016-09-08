@@ -2,13 +2,14 @@
 
 #include <stdexcept>
 #include "NoFunc.h"
+#include "Switcher.h"
 
 using namespace std;
 
 //configのtypeが存在するか調べる
 bool isExistentType(const string &type){
 	static unordered_set<string> table{
-		"nofunc"
+		"nofunc", "switcher"
 	};
 	return end(table) != table.find(type);
 };
@@ -18,6 +19,7 @@ unique_ptr<Controller> createController(const string &type, std::weak_ptr<Socket
 {
 	static unordered_map<string, function<unique_ptr<Controller>(std::weak_ptr<Socket>)>> table{
 		{ "nofunc", [=](std::weak_ptr<Socket> soc){ return make_unique<NoFunc>(soc); } }
+		, {"switcher", [=](std::weak_ptr<Socket> soc){ return make_unique<Switcher>(soc); } }
 	};
 	if(end(table) == table.find(type)){
 		    BOOST_THROW_EXCEPTION(boost::enable_error_info(invalid_argument(

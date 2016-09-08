@@ -6,7 +6,9 @@
 struct Config {
 	std::string hostName;
 	in_port_t port;
+	std::string name;
 	std::string type;
+	int imageId;
 };
 
 Config loadConfig();

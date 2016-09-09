@@ -1,5 +1,6 @@
+PRE     = stdafx
 CC      = g++
-CFLAGS  = -MMD -MP -Wall -std=c++14
+CFLAGS  = -Wall -std=c++14
 LDFLAGS = -lwiringPi
 LIBS    = 
 INCLUDE = -I ./sources
@@ -9,20 +10,26 @@ SOURCES = $(shell ls $(SRC_DIR)/*.cpp)
 OBJS    = $(subst $(SRC_DIR),$(OBJ_DIR), $(SOURCES:.cpp=.o))
 TARGET  = controller
 DEPENDS = $(OBJS:.o=.d)
+MKDIR   = \
+	@if [ ! -d $(OBJ_DIR) ]; \
+		then echo "mkdir -p $(OBJ_DIR)"; mkdir -p $(OBJ_DIR); \
+	fi
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS) $(LIBS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp 
-	@if [ ! -d $(OBJ_DIR) ]; \
-		then echo "mkdir -p $(OBJ_DIR)"; mkdir -p $(OBJ_DIR); \
-	fi
-	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $< 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/$(PRE).h.gch
+	$(MKDIR)
+	$(CC) -MMD -MP $(CFLAGS) $(INCLUDE) -include $(PRE).h -o $@ -c $< 
+
+$(SRC_DIR)/$(PRE).h.gch: $(SRC_DIR)/$(PRE).h
+	$(MKDIR)
+	$(CC) $(CFLAGS) $(INCLUDE) -c $<
 
 clean:
-	$(RM) $(OBJS) $(TARGET) $(DEPENDS)
+	$(RM) $(OBJS) $(TARGET) $(DEPENDS) $(SRC_DIR)/$(PRE).h.gch
 
 -include $(DEPENDS)
 

@@ -5,16 +5,38 @@
 
 #include "config.h"
 #include "socket.h"
+#include "utilities.h"
+#include "Controller.h"
+#include "TypeUtilities.h"
 
 using namespace std;
 
 namespace {
+	
 	volatile sig_atomic_t receivedSignal = 0;;
-}
 
-//シグナルハンドラ ctrl+cが押された時に呼ばれる
-void signalHandler(int signum){
-	receivedSignal = 1;
+	//シグナルハンドラ ctrl+cが押された時に呼ばれる
+	void signalHandler(int signum){
+		receivedSignal = 1;
+	}
+	
+	//vectorに文字数と文字列を追加
+	void addString(vector<unsigned char> &v, const string& s){
+		boost::insert(v, end(v), intToBytes(s.size()));
+		boost::insert(v, end(v), s);
+	}
+	
+	//info(name, type, imageId)を送るデータを作る
+	vector<unsigned char> makeInfo(string name, string type, int imageId) {
+		vector<unsigned char> b;
+		
+		b.push_back(MessageTypeToUchar(MessageType::Info));
+		addString(b, name);
+		addString(b, type);
+		boost::insert(b, end(b), intToBytes(imageId));
+		
+		return move(b);
+	}
 }
 
 int main(int argc, char **argv){
@@ -29,19 +51,29 @@ int main(int argc, char **argv){
 	Config config = loadConfig();
 	
 	try {
-		Socket soc(config.hostName, config.port);
+		auto soc = make_shared<Socket>(config.hostName, config.port);
 		
-		soc.sendData("abcde");
-		soc.sendData(std::initializer_list<unsigned char>{9, 8, 7});
+		//コントローラーを作る
+		unique_ptr<Controller> controller = isExistentType(config.type)
+			? createController(config.type, soc)
+			: createDefaultController(soc);
+		
+		//infoを送る
+		soc->sendData(makeInfo(config.name, config.type, config.imageId));
 		
 		unique_ptr<vector<unsigned char>> buf;
-		while(buf = soc.getData()){
+		while(buf = soc->getData()){
 			cerr << boost::format("received %d bytes of data: \"%s\"") % buf->size() % string(begin(*buf), end(*buf)) << endl;
 			for(auto c : *buf){
 				cerr << boost::format("%02x ") % static_cast<int>(c);
 			}
 			cerr << endl;
+			
+			//コントローラーのそれぞれの処理をする
+			controller->processData(*buf);
 		}
+		
+		saveConfig(config);
 	} catch(SocketException &e) {
 		cerr << boost::diagnostic_information(e) << endl;
 	}

@@ -27,6 +27,7 @@
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/range.hpp> 
 #include <boost/range/adaptors.hpp> 
 #include <boost/range/algorithm.hpp>

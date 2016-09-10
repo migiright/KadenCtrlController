@@ -4,6 +4,7 @@
 #include "config.h"
 #include "NoFunc.h"
 #include "Switcher.h"
+#include "Remocon.h"
 #include "utilities.h"
 
 using namespace std;
@@ -11,7 +12,7 @@ using namespace std;
 //configのtypeが存在するか調べる
 bool isExistentType(const string &type){
 	static unordered_set<string> table{
-		"nofunc", "switcher"
+		"nofunc", "switcher", "remocon"
 	};
 	return end(table) != table.find(type);
 };
@@ -28,6 +29,9 @@ unique_ptr<Controller> createController(
 		}}
 		, {"switcher", [=](weak_ptr<Socket> soc, weak_ptr<Config> con){
 			return make_unique<Switcher>(soc, con);
+		}}
+		, {"remocon", [=](weak_ptr<Socket> soc, weak_ptr<Config> con){
+			return make_unique<Remocon>(soc, con);
 		}}
 	};
 	if(end(table) == table.find(type)){

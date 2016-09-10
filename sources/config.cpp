@@ -22,6 +22,7 @@ namespace {
 		static unordered_map<string, function<unique_ptr<LocalConfig>(const ptree&)>> table{
 			{"nofunc", [](const ptree &pt){ return make_unique<LocalConfig>(); }}
 			, {"switcher", [](const ptree &pt){ return make_unique<LocalConfig>(); }}
+			, {"remocon", [](const ptree &pt){ return make_unique<LocalConfig>(); }}
 		};
 		if(end(table) == table.find(type)){
 			return make_unique<LocalConfig>();

@@ -1,6 +1,10 @@
 #pragma once
 
 #include <array>
+#include <boost/exception/all.hpp>
+
+typedef boost::error_info<struct tag_ParameterName, std::string> ParameterNameInfo;
+typedef boost::error_info<struct tag_Argument, std::string> ArgumentInfo;
 
 template<class T>
 int bytesToInt(T iterator){

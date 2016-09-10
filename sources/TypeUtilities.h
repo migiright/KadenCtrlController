@@ -3,11 +3,6 @@
 #include "Controller.h"
 #include <memory>
 
-#include <boost/exception/all.hpp>
-
-typedef boost::error_info<struct tag_ParameterName, std::string> ParameterNameInfo;
-typedef boost::error_info<struct tag_Argument, std::string> ArgumentInfo;
-
 //configのtypeが存在するか調べる
 bool isExistentType(const std::string &type);
 

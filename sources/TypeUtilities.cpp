@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include "NoFunc.h"
 #include "Switcher.h"
+#include "utilities.h"
 
 using namespace std;
 

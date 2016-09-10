@@ -1,7 +1,6 @@
 #include "config.h"
 
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include <boost/optional.hpp>
 
 #include "utilities.h"
@@ -16,7 +15,7 @@ void LocalConfig::save(boost::property_tree::ptree &pt)
 {}
 
 namespace {
-	constexpr const char *ConfigFileName = "config.ini";
+	constexpr const char *ConfigFileName = "config.json";
 	
 	//タイプ固有のコンフィグをロード
 	unique_ptr<LocalConfig> loadLocalConfig(const ptree &tree, string type){
@@ -44,8 +43,8 @@ Config loadConfig(){
 	};
 	
 	try {
-    	read_ini(ConfigFileName, pt);
-	} catch(ini_parser_error &e){ //ファイルが読み込めなかった時はデフォルトで
+    	read_json(ConfigFileName, pt);
+	} catch(json_parser_error &e){ //ファイルが読み込めなかった時はデフォルトで
 		c.local = loadLocalConfig(pt, c.type);
 		return c;
 	}
@@ -72,5 +71,5 @@ void saveConfig(const Config &config){
 	
 	config.local->save(pt);
 	
-	write_ini(ConfigFileName, pt);
+	write_json(ConfigFileName, pt);
 }

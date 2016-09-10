@@ -5,7 +5,7 @@
 //AC100Vをスイッチするコントローラ
 class Switcher : public Controller {
 public:
-	Switcher(std::weak_ptr<Socket> socket);
+	Switcher(std::weak_ptr<Socket> socket, std::weak_ptr<Config> config);
 	virtual ~Switcher();
 	
 protected:

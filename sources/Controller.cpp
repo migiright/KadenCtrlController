@@ -5,8 +5,9 @@
 
 using namespace std;
 
-Controller::Controller(std::weak_ptr<Socket> socket)
+Controller::Controller(std::weak_ptr<Socket> socket, std::weak_ptr<Config> config)
 	: socket_(socket)
+	, config_(config)
 {
 	wiringPiSetupGpio();
 }

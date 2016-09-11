@@ -27,12 +27,14 @@
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/range.hpp> 
 #include <boost/range/adaptors.hpp> 
 #include <boost/range/algorithm.hpp>
 #include <boost/range/algorithm_ext.hpp> 
+#include <boost/range/any_range.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/noncopyable.hpp>
 
 #endif

@@ -48,18 +48,18 @@ int main(int argc, char **argv){
 		sigaction(SIGINT, &sa, nullptr);
 	}
 	
-	Config config = loadConfig();
+	auto config = make_shared<Config>(loadConfig());
 	
 	try {
-		auto soc = make_shared<Socket>(config.hostName, config.port);
+		auto soc = make_shared<Socket>(config->hostName, config->port);
 		
 		//コントローラーを作る
-		unique_ptr<Controller> controller = isExistentType(config.type)
-			? createController(config.type, soc)
-			: createDefaultController(soc);
+		unique_ptr<Controller> controller = isExistentType(config->type)
+			? createController(config->type, soc, config)
+			: createDefaultController(soc, config);
 		
 		//infoを送る
-		soc->sendData(makeInfo(config.name, config.type, config.imageId));
+		soc->sendData(makeInfo(config->name, config->type, config->imageId));
 		
 		unique_ptr<vector<unsigned char>> buf;
 		while(buf = soc->getData()){
@@ -73,7 +73,7 @@ int main(int argc, char **argv){
 			controller->processData(*buf);
 		}
 		
-		saveConfig(config);
+		saveConfig(*config);
 	} catch(SocketException &e) {
 		cerr << boost::diagnostic_information(e) << endl;
 	}

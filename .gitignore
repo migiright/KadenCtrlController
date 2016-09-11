@@ -2,4 +2,5 @@
 *.d
 controller
 *.gch
-*.ini
+*.json
+files

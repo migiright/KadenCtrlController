@@ -1,14 +1,35 @@
 #include "config.h"
 
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include <boost/optional.hpp>
+
+#include "utilities.h"
 
 using namespace std;
 using namespace boost::property_tree;
 
+LocalConfig::~LocalConfig()
+{}
+
+void LocalConfig::save(boost::property_tree::ptree &pt)
+{}
+
 namespace {
-	constexpr const char *ConfigFileName = "config.ini";
+	constexpr const char *ConfigFileName = "config.json";
+	
+	//タイプ固有のコンフィグをロード
+	unique_ptr<LocalConfig> loadLocalConfig(const ptree &tree, string type){
+		static unordered_map<string, function<unique_ptr<LocalConfig>(const ptree&)>> table{
+			{"nofunc", [](const ptree &pt){ return make_unique<LocalConfig>(); }}
+			, {"switcher", [](const ptree &pt){ return make_unique<LocalConfig>(); }}
+			, {"remocon", [](const ptree &pt){ return make_unique<LocalConfig>(); }}
+		};
+		if(end(table) == table.find(type)){
+			return make_unique<LocalConfig>();
+		}
+		return table[type](tree);
+	}
+	
 }
 
 Config loadConfig(){
@@ -19,11 +40,13 @@ Config loadConfig(){
 		, "名無し"
 		, "nofunc"
 		, 0
+		, make_unique<LocalConfig>()
 	};
 	
 	try {
-    	read_ini(ConfigFileName, pt);
-	} catch(ini_parser_error &e){ //ファイルが読み込めなかった時はデフォルトで
+    	read_json(ConfigFileName, pt);
+	} catch(json_parser_error &e){ //ファイルが読み込めなかった時はデフォルトで
+		c.local = loadLocalConfig(pt, c.type);
 		return c;
 	}
 
@@ -32,6 +55,9 @@ Config loadConfig(){
 	c.name = pt.get<string>("common.name", c.name);
 	c.type = pt.get<string>("common.type", c.type);
 	c.imageId = pt.get<int>("common.imageId", c.imageId);
+	
+	c.local = loadLocalConfig(pt, c.type);
+	
 	return c;
 }
 
@@ -44,5 +70,7 @@ void saveConfig(const Config &config){
 	pt.put("common.type", config.type);
 	pt.put("common.imageId", config.imageId);
 	
-	write_ini(ConfigFileName, pt);
+	config.local->save(pt);
+	
+	write_json(ConfigFileName, pt);
 }

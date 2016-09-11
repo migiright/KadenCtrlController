@@ -9,8 +9,8 @@ namespace {
 	constexpr int GpioPinNo = 14;
 }
 
-Switcher::Switcher(std::weak_ptr<Socket> socket)
-	: Controller(socket)
+Switcher::Switcher(std::weak_ptr<Socket> socket, std::weak_ptr<Config> config)
+	: Controller(socket, config)
 {
 	cout << "Switcher started." << endl;
 	pinMode(GpioPinNo, OUTPUT);

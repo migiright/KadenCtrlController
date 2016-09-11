@@ -6,7 +6,7 @@
 //デフォルト
 class NoFunc : public Controller {
 public:
-	NoFunc(std::weak_ptr<Socket> socket);
+	NoFunc(std::weak_ptr<Socket> socket, std::weak_ptr<Config> config);
 	
 protected:
 	virtual void processLocalData(BufferRange range);

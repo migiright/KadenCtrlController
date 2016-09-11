@@ -2,13 +2,20 @@
 
 #include <array>
 #include <boost/exception/all.hpp>
+#include <boost/optional.hpp>
+#include <boost/range/any_range.hpp>
 
 typedef boost::error_info<struct tag_ParameterName, std::string> ParameterNameInfo;
 typedef boost::error_info<struct tag_Argument, std::string> ArgumentInfo;
 
 template<class T>
 int bytesToInt(T iterator){
-	return iterator[0] | iterator[1] << 8 | iterator[2] << 16 | iterator[3] << 24;
+	int x = 0;
+	x += *iterator++;
+	x += *iterator++ << 8;
+	x += *iterator++ << 16;
+	x += *iterator++ << 24;
+	return x;
 }
 
 inline std::array<unsigned char, 4> intToBytes(unsigned x){
@@ -18,6 +25,11 @@ inline std::array<unsigned char, 4> intToBytes(unsigned x){
 		, static_cast<unsigned char>((x>>24) & 0xff)
 	};
 }
+
+//unsigned charのrangeから文字数を読み取ってstringを読み取る
+boost::optional<std::string> readString(boost::any_range<
+	unsigned char, boost::forward_traversal_tag, const unsigned char&, std::ptrdiff_t
+> range);
 
 //サーバーに送るメッセージのタイプ
 enum class MessageType : unsigned char {

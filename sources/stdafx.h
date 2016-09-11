@@ -31,6 +31,7 @@
 #include <boost/range/adaptors.hpp> 
 #include <boost/range/algorithm.hpp>
 #include <boost/range/algorithm_ext.hpp> 
+#include <boost/range/any_range.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/noncopyable.hpp>
